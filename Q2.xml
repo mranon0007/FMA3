@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+// sync on chanels
+
+chan release_intersection, get_intersection;
+
+</declaration>
+	<template>
+		<name x="5" y="5">Car</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-85" y="-34">
+			<name x="-85" y="-68">drive_away</name>
+		</location>
+		<location id="id1" x="-323" y="-34">
+			<name x="-374" y="-68">wait_on_red</name>
+		</location>
+		<location id="id2" x="-544" y="-34">
+			<name x="-527" y="-59">begin</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-526" y="-298">release_intersection!</label>
+			<nail x="-85" y="-281"/>
+			<nail x="-544" y="-281"/>
+			<nail x="-544" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-263" y="-68">get_intersection!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<nail x="-340" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Intersection</name>
+		<location id="id3" x="-68" y="-34">
+			<name x="-78" y="-68">taken</name>
+		</location>
+		<location id="id4" x="-535" y="-34">
+			<name x="-545" y="-68">free</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-365" y="-102">release_intersection?</label>
+			<nail x="-331" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-365" y="0">get_intersection?</label>
+			<nail x="-331" y="0"/>
+		</transition>
+	</template>
+	<template>
+		<name>z</name>
+		<location id="id5" x="-187" y="-17">
+		</location>
+		<init ref="id5"/>
+	</template>
+	<system>// Place template instantiations here.
+toG11 = Car();
+toZPoint = Car();
+toNust = Car();
+toGolra = Car();
+// List one or more processes to be composed into a system.
+system toG11, toZPoint, toNust, toGolra, Intersection;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] not (toG11.drive_away &amp;&amp; (toZPoint.drive_away || toNust.drive_away || toGolra.drive_away))
+			</formula>
+			<comment>MutEx: Never (Not in any of the future states) when cars are driving towards G11, other roads shall be open.
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; deadlock
+			</formula>
+			<comment>Does there exist any deadlock?
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; toZPoint.drive_away 
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; toGolra.drive_away 
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; toNust.drive_away 
+			</formula>
+			<comment>
+			</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; toG11.drive_away 
+			</formula>
+			<comment>There exisist an event where cars can drive towards G11.
+			</comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment>We are checking the possible deadlock here.
+			</comment>
+		</query>
+	</queries>
+</nta>
